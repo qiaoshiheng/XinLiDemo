@@ -40,8 +40,99 @@
     	<p><a id="to_registerJsp" href="${pageContext.request.contextPath}/com/wx/login/controller/toRegisterJsp" class="fl">立即注册</a><a href="javascript:;" class="fr">忘记密码？</a></p>
     </form>
 </div>
-		<script type="text/javascript">
-			alert("${pageContext.request.contextPath}")
-		</script>
+		<script src="${pageContext.request.contextPath}/layui/layui.js"></script>
+<script type="text/javascript">
+	var $ = layui.jquery;
+	
+    layui.use(['form','layer','jquery'], function () {
+        // 操作对象
+        var form = layui.form;
+        var $ = layui.jquery;
+        form.on('submit(login)',function (data) {
+            // console.log(data.field);
+            $.ajax({
+                url:'${pageContext.request.contextPath}/com/wx/login/controller/loginVerify',
+                data:{
+                	"loginNum":$('#loginNum').val(),
+                	"passWord":$('#passWord').val(),
+                	"userInputCheckCode":$('#userInputCheckCode').val(),
+                	"userOpenId":$('#userOpenId').val()
+                },
+                dataType:'json',
+                type:'post',
+                success:function (data) {
+                	debugger
+                    if (data.msg == '1'){
+                        //location.href = "../index.php";
+                    	layer.msg('登录成功!');
+                    	setTimeout("location.href='${pageContext.request.contextPath}/com/wx/login/controller/successToMainIndexJsp'",1000);
+                    }else if(data.msg=='2'){
+                    	layer.msg('登录名或密码错误!');
+                    }else if(data.msg=='0'){
+                    	layer.msg('验证码错误!');
+                    }else if(data.msg=='5'){
+                    	layer.msg('您是普通用户,请使用微信端登录账号!');
+                    }else if(data.msg=='6'){
+                    	layer.msg('您还未通过审核!请联系系统管理员!');
+                    }else if(data.msg=='7'){
+                    	layer.msg('请使用您自己的微信登录该账号!');
+                    }else{
+                        layer.msg('用户不存在!');
+                    }
+                }
+            })
+            return false;
+        })
+ 
+    });
+</script>
+<script src="${pageContext.request.contextPath}/layui/jquery-3.2.1.js"></script>
+<script>
+	$(document).ready(function generateCheckCode(){
+	    		debugger
+	    		$('#checkCodeImg').attr('src', '${pageContext.request.contextPath}/com/wx/login/util/generateCheckCode? ' + new Date().getTime());//初始化验证码
+	    		/* $('#checkCodeStr').val("${sessionScope}"); */
+	    		var url=location.href;
+	    		if(url.indexOf('code=')==-1){
+	    			$('#to_registerJsp').hide();
+	    		}
+	    		getOpenId();
+	    		toRegisterJsp();
+	    	});
+	function generateCheckCodeFresh(){
+		$('#checkCodeImg').attr('src', '${pageContext.request.contextPath}/com/wx/login/util/generateCheckCode? ' + new Date().getTime());//初始化验证码
+	}
+	function toRegisterJsp(){
+		var url=location.href;
+		$.ajax({
+			url:"${pageContext.request.contextPath}/com/wx/login/controller/addUrlToSession",
+			data:{
+				"url":url
+			},
+			dataType:'json',
+            type:'post'
+		})
+	}
+	function getOpenId(){
+		var url2=location.href;
+		$.ajax({
+			url:"${pageContext.request.contextPath}/com/wx/verify/getopenid/dopost",
+			data:{
+				"url":url2
+			},
+			dataType:'json',
+            type:'post',
+            success: function(data){
+            	debugger
+            	if(data.openid !='error4'){
+            		/* layui.use(['layer'],function(){
+            			layer.msg("请使用微信端登录账号!");
+            		}) */
+            		$("#userOpenId").val(data.openid);
+            	}
+            }
+		});
+	}
+</script>
     </body>
 </html>
