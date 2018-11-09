@@ -40,7 +40,7 @@
     	<p><a id="to_registerJsp" href="${pageContext.request.contextPath}/com/wx/login/controller/toRegisterJsp" class="fl">立即注册</a><a href="javascript:;" class="fr">忘记密码？</a></p>
     </form>
 </div>
-		<script src="${pageContext.request.contextPath}/layui/layui.js"></script>
+<!-- <script src="${pageContext.request.contextPath}/layui/layui.js"></script>
 <script type="text/javascript">
 	var $ = layui.jquery;
 	
@@ -133,6 +133,7 @@
             }
 		});
 	}
-</script>
+</script> -->
+		
     </body>
 </html>
